@@ -43,7 +43,7 @@ class GridMap1D():
     def plot(self):
         """Plot the grid map
         """
-        plt.bar(np.arange(self.grid_num), self.grid_map, width=1.0, color='b')
+        plt.bar(np.arange(self.grid_num) + 0.5, self.grid_map, width=1.0, color='b')
         plt.show()
 
     def update(self, measurement):
@@ -56,22 +56,15 @@ class GridMap1D():
             p_m_z = inverse_sensor_model(i, measurement)
             z_term = (1-p_m_z) / p_m_z
             recursive_term = (1-self.grid_map[i]) / self.grid_map[i]
-            prior_term = 0 #self.prior / (1 - self.prior)
+            prior_term = self.prior / (1 - self.prior)
 
-            self.grid_map[i] = 1 / (1 + z_term + prior_term + recursive_term)
-
-
+            self.grid_map[i] = 1 / (1 + z_term*prior_term*recursive_term)
 
 
-            # self.grid_map[i] = 1 / (1 + (1 - p_m_z)/p_m_z + prior/(1-prior) 
-                                    # + (1-self.grid_map[i])/self.grid_map[i])
-            
 # Create a grid map
 grid_map = GridMap1D(grid_size, grid_num, grid_range, prior)
 
-# measurements = [101, 82, 91, 112, 99, 151, 96, 85, 99, 105]  # the measurements of the object
-measurements = [10]  # the measurements of the object
-
+measurements = [101, 82, 91, 112, 99, 151, 96, 85, 99, 105]  # the measurements of the object
 
 # Update the grid map
 for measurement in measurements:
